@@ -1,0 +1,42 @@
+[Unit]
+Description=Peekaboo infrared face unlock
+Documentation=https://github.com/Hesam-deb/peekaboo
+Requires=peekaboo.socket
+After=peekaboo.socket
+
+[Service]
+ExecStart=/usr/lib/peekaboo/peekabood
+Sockets=peekaboo.socket
+LoadCredentialEncrypted=peekaboo.key:/etc/peekaboo/peekaboo.key.cred
+UMask=0077
+StateDirectory=peekaboo
+StateDirectoryMode=0700
+# An idle exit must not forget lockouts; only a reboot clears /run/peekaboo.
+RuntimeDirectory=peekaboo
+RuntimeDirectoryPreserve=yes
+
+# Root, but with no capabilities and no reach beyond the cameras.
+CapabilityBoundingSet=
+NoNewPrivileges=yes
+DevicePolicy=closed
+DeviceAllow=char-video4linux rw
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateNetwork=yes
+RestrictAddressFamilies=AF_UNIX
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+ProtectHostname=yes
+RestrictNamespaces=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+MemoryMax=1G
+TasksMax=96

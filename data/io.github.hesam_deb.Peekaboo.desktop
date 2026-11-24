@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Peekaboo
+GenericName=Face Unlock
+Comment=Unlock your laptop by looking at it
+Exec=peekaboo gui
+Icon=io.github.hesam_deb.Peekaboo
+Categories=Settings;Security;GTK;GNOME;
+Keywords=face;unlock;login;infrared;biometric;
+Terminal=false
+StartupNotify=true

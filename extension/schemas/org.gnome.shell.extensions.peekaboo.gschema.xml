@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.peekaboo" path="/org/gnome/shell/extensions/peekaboo/">
+    <key name="style" type="s"><default>'peekaboo'</default><summary>Animation style</summary></key>
+    <key name="effect" type="s"><default>'confetti'</default><summary>Success effect: none, ripple, glow, confetti</summary></key>
+    <key name="follow" type="b"><default>true</default><summary>Follow the head and eyes of the person</summary></key>
+    <key name="color-mode" type="s"><default>'white'</default><summary>Colour: white, accent, custom</summary></key>
+    <key name="custom-color" type="s"><default>'#62a0ea'</default><summary>Custom colour</summary></key>
+    <key name="success-color" type="s"><default>'#57e389'</default><summary>Colour on success</summary></key>
+    <key name="failure-color" type="s"><default>'#ff7b63'</default><summary>Colour on failure</summary></key>
+    <key name="size" type="i"><range min="64" max="240"/><default>120</default><summary>Size in pixels</summary></key>
+    <key name="position" type="s"><default>'top'</default><summary>Position: top, middle, bottom</summary></key>
+    <key name="speed" type="d"><range min="0.5" max="2.0"/><default>1.0</default><summary>Speed</summary></key>
+    <key name="backdrop" type="d"><range min="0.0" max="1.0"/><default>0.6</default><summary>Opacity of the disc behind the figure</summary></key>
+    <key name="captions" type="b"><default>true</default><summary>Show hints below the figure</summary></key>
+    <key name="greeting" type="s"><default>'Peekaboo!'</default><summary>Caption on success; empty for none</summary></key>
+    <key name="on-lock" type="b"><default>true</default><summary>Show on the lock screen</summary></key>
+    <key name="on-system" type="b"><default>true</default><summary>Show with system prompts</summary></key>
+    <key name="on-shell" type="b"><default>true</default><summary>Show for sudo and su</summary></key>
+  </schema>
+</schemalist>

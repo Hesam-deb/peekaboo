@@ -1,0 +1,92 @@
+name: CI
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - {arch: amd64, runner: ubuntu-latest}
+          - {arch: arm64, runner: ubuntu-24.04-arm}
+    runs-on: ${{ matrix.runner }}
+    container: debian:trixie
+    steps:
+      - name: Dependencies
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends ca-certificates gcc make git file \
+            libc6-dev libpam0g-dev libsystemd0 libglib2.0-bin python3-opencv python3-numpy \
+            python3-cryptography pyflakes3 shellcheck appstream desktop-file-utils gjs man-db
+      - uses: actions/checkout@v7
+      - name: Lint
+        run: |
+          pyflakes3 src tests tools
+          shellcheck install.sh uninstall.sh data/setup packaging/postinst packaging/prerm packaging/postrm
+          glib-compile-schemas --strict --dry-run extension/schemas
+          desktop-file-validate data/*.desktop
+          appstreamcli validate --no-net data/*.metainfo.xml
+          bash -n data/completion.bash
+          man --warnings -E UTF-8 -l -Tutf8 -Z data/man/peekaboo.1 >/dev/null
+          mkdir /tmp/frames && gjs -m tools/make_gif.js /tmp/frames && test -s /tmp/frames/f0139.png
+      - name: Tests
+        run: make test
+      - name: Package
+        run: |
+          make models
+          make deb
+          dpkg-deb --info build/peekaboo_*.deb
+      - uses: actions/upload-artifact@v7
+        with:
+          name: deb-${{ matrix.arch }}
+          path: build/*.deb
+          if-no-files-found: error
+  opencv5:
+    # Rolling distributions are moving to OpenCV 5.
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - run: |
+          sudo apt-get update && sudo apt-get install -y --no-install-recommends libpam0g-dev
+          python3 -m venv venv && venv/bin/pip -q install --pre "opencv-python-headless>=5.0.0a1" numpy cryptography
+          PYTHONPATH=src venv/bin/python -P tools/fetch_models.py models
+          PYTHONPATH=src venv/bin/python -P -c "
+          import cv2, numpy as np; from pathlib import Path; from peekaboo.vision import Vision
+          print('OpenCV', cv2.__version__)
+          v = Vision(Path('models')); image = np.random.default_rng(0).integers(0, 255, (360, 640), np.uint8)
+          print(v.analyse(image, image))
+          row = np.array([[250, 100, 120, 150, 280, 150, 340, 150, 310, 180, 285, 210, 335, 210, .9]], np.float32)
+          bgr = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
+          assert v.recogniser.feature(v.recogniser.alignCrop(bgr, row[0])).size == 128
+          assert 0 <= v._eyes_open(bgr, row[0][4:14].reshape(5, 2).astype(float)) <= 1"
+          PYTHONPATH=src venv/bin/python -P -m unittest discover -s tests -p 'test_c*.py'
+  selinux:
+    runs-on: ubuntu-latest
+    container: fedora:latest
+    steps:
+      - run: dnf -y -q install checkpolicy git-core
+      - uses: actions/checkout@v7
+      - run: checkmodule -M -m -o /tmp/peekaboo.mod packaging/selinux/peekaboo.te
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [build, opencv5, selinux]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: deb-*
+          merge-multiple: true
+      - name: Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          sha256sum *.deb > SHA256SUMS
+          gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --title "Peekaboo ${TAG#v}" \
+            --generate-notes *.deb SHA256SUMS

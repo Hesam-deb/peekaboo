@@ -1,0 +1,78 @@
+#!/bin/sh
+# Finishes an installation: template key, migration from FaceID 0.x, socket.
+set -eu
+
+has_tpm() {
+    systemd-analyze has-tpm2 -q >/dev/null 2>&1 || systemd-creds has-tpm2 -q >/dev/null 2>&1
+}
+
+# Seals stdin to this machine, with its TPM when there is one. Not bound to PCRs:
+# a firmware update should not throw away enrolled faces.
+seal() {
+    if has_tpm; then with=host+tpm2; else with=host; fi
+    (umask 077; systemd-creds encrypt --name=peekaboo.key --with-key=$with --tpm2-pcrs= - "$1.tmp")
+    mv "$1.tmp" "$1"
+    echo "template key sealed with $with"
+}
+
+cred=/etc/peekaboo/peekaboo.key.cred
+old=/etc/faceid/faceid.key.cred
+install -d /etc/peekaboo
+install -d -m700 /var/lib/peekaboo
+
+if [ ! -e $cred ] && [ -e $old ]; then
+    echo "migrating enrolled faces from FaceID"
+    plain=$(mktemp /run/peekaboo-key.XXXXXX)        # memory, mode 0600
+    trap 'rm -f "$plain"' EXIT
+    systemctl stop faceid.service 2>/dev/null || true
+    systemd-creds decrypt --name=faceid.key $old "$plain"
+    seal $cred < "$plain"
+    rm -f "$plain"
+    for f in /var/lib/faceid/*.face /var/lib/faceid/*.json; do
+        [ -e "$f" ] && cp -p "$f" /var/lib/peekaboo/
+    done
+    if [ -e /run/faceid/policy.json ]; then         # keeps "password entered since boot"
+        install -d /run/peekaboo
+        cp -p /run/faceid/policy.json /run/peekaboo/
+    fi
+    if grep -qs '^[^#[]' /etc/faceid/config.toml; then
+        echo "note: your changes in /etc/faceid/config.toml were not carried over"
+    fi
+elif [ ! -e $cred ]; then
+    head -c 32 /dev/urandom | seal $cred
+fi
+
+# PAM: bring the new module in before taking the old one out, and never leave a
+# stack that names a module which is about to disappear.
+if grep -qs pam_faceid.so /etc/pam.d/common-auth; then
+    pam-auth-update --enable peekaboo peekaboo-password
+    grep -q pam_peekaboo.so /etc/pam.d/common-auth || {
+        echo "PAM was not switched over; FaceID is left in place" >&2; exit 1; }
+    pam-auth-update --package --remove faceid faceid-password
+fi
+
+if [ -e /usr/lib/faceid ]; then
+    if grep -qs pam_faceid.so /etc/pam.d/*; then
+        echo "pam_faceid is still used in /etc/pam.d; FaceID's files are left in place" >&2
+    else
+        systemctl disable --now faceid.socket faceid.service 2>/dev/null || true
+        rm -f /usr/lib/*/security/pam_faceid.so /usr/share/pam-configs/faceid \
+              /usr/share/pam-configs/faceid-password /usr/lib/systemd/system/faceid.socket \
+              /usr/lib/systemd/system/faceid.service /usr/bin/faceid \
+              /usr/share/polkit-1/actions/org.faceid.policy \
+              /usr/share/applications/org.faceid.App.desktop
+        rm -rf /usr/lib/faceid /usr/share/faceid \
+               /usr/share/gnome-shell/extensions/faceid-lock@irface
+        # The old data goes only once the new copy is complete.
+        same=yes
+        for f in /var/lib/faceid/*.face; do
+            [ ! -e "$f" ] || cmp -s "$f" "/var/lib/peekaboo/${f##*/}" || same=no
+        done
+        if [ $same = yes ]; then rm -rf /var/lib/faceid /etc/faceid /run/faceid; fi
+        echo "FaceID was replaced by Peekaboo"
+    fi
+fi
+
+systemctl daemon-reload
+systemctl enable --now peekaboo.socket
+systemctl try-restart peekaboo.service

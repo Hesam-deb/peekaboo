@@ -1,0 +1,71 @@
+.TH PEEKABOO 1 "2026-11-24" "peekaboo 1.1" "User Commands"
+.SH NAME
+peekaboo \- infrared face unlock for laptops
+.SH SYNOPSIS
+.B peekaboo
+[\fB\-\-user\fR \fINAME\fR] \fICOMMAND\fR [\fIARGS\fR]
+.SH DESCRIPTION
+Unlocks the lock screen, the login screen, sudo and system prompts by looking at
+you, on laptops with an infrared (Windows Hello) camera. The work is done by the
+.BR peekaboo.service ;
+this command talks to it.
+.SH COMMANDS
+.TP
+.B gui
+Open the app.
+.TP
+.B status
+Enrolled faces, settings and state.
+.TP
+\fBenroll\fR [\fB\-\-ir\-only\fR] [\fB\-\-camera\fR \fIID\fR] [\fINAME\fR]
+Register a face. Both cameras watch and have to agree; only infrared is stored.
+.TP
+\fBtest\fR [\fB\-\-gesture\fR]
+Try recognition and show scores. Grants nothing.
+.TP
+\fBremove\fR \fIID\fR | \fB\-\-all\fR
+Remove a face.
+.TP
+\fBuse\fR [\fBlock\fR] [\fBlogin\fR] [\fBshell\fR] [\fBsystem\fR] | \fBall\fR | \fBnone\fR
+Use Peekaboo only for these. Without arguments, show the choice.
+.TP
+\fBset head\-turn\fR \fIUSE\fR... | \fBall\fR | \fBnone\fR
+Where to ask for a small turn of the head.
+.TP
+\fBset attention on\fR | \fBoff\fR
+Whether the eyes must be open and the face turned to the camera.
+.TP
+\fBset level standard\fR | \fBhigh\fR | \fBmaximum\fR
+How strictly to match.
+.TP
+\fBcameras\fR [\fB\-\-probe\fR]
+List cameras and how they were recognised; with \-\-probe, look through them.
+.TP
+\fBhistory\fR [\fB\-\-clear\fR]
+Recent unlocks.
+.TP
+\fBanimation\fR [\fBon\fR | \fBoff\fR | \fBstudio\fR]
+The GNOME animation.
+.TP
+.B doctor
+Check hardware and installation.
+.TP
+.B logs
+The service log.
+.PP
+Loosening a setting asks for the password, tightening one does not.
+.SH TERMINALS
+While the camera looks, the password can be typed as usual; it is tried as soon as
+Enter is pressed. Enter alone goes to the password prompt, Ctrl+C aborts.
+.SH FILES
+.TP
+.I /etc/peekaboo/config.toml
+Configuration. Its comments describe every option.
+.TP
+.I /var/lib/peekaboo
+Encrypted faces, settings and history.
+.SH SEE ALSO
+.BR pam (7),
+.BR pam\-auth\-update (8),
+.UR https://github.com/Hesam\-deb/peekaboo
+.UE

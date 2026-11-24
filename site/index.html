@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Peekaboo: infrared face unlock for Linux laptops</title>
+<meta name="description" content="Unlock your Linux laptop by looking at it. Infrared face unlock for the lock screen, login, sudo and system prompts.">
+<meta name="theme-color" content="#150d42">
+<link rel="canonical" href="https://hesam-deb.github.io/peekaboo/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Peekaboo">
+<meta property="og:description" content="Unlock your Linux laptop by looking at it.">
+<meta property="og:url" content="https://hesam-deb.github.io/peekaboo/">
+<meta property="og:image" content="https://hesam-deb.github.io/peekaboo/docs/app.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="docs/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css">
+<script type="importmap">{"imports": {"cairo": "./cairo.js"}}</script>
+<script type="module" src="page.js"></script>
+</head>
+<body>
+<header class="wrap top">
+  <a class="name" href="./"><img src="docs/icon.svg" width="38" height="38" alt="">Peekaboo</a>
+  <nav aria-label="Main">
+    <a href="#animations">Animations</a><a href="#how">How it works</a><a href="#limits">Limits</a><a href="#install">Install</a><a href="https://github.com/Hesam-deb/peekaboo">GitHub</a>
+  </nav>
+</header>
+
+<main>
+<div class="wrap hero">
+  <div class="words">
+    <h1>Unlock your Linux laptop by looking at it.</h1>
+    <p>Infrared face unlock for the lock screen, login, <code>sudo</code> and system prompts. A little friend on your screen looks back at you while it works.</p>
+    <div class="actions">
+      <a class="go" href="#install">Install Peekaboo</a>
+      <a href="https://github.com/Hesam-deb/peekaboo">Read the source</a>
+    </div>
+  </div>
+  <div class="stage">
+    <canvas id="friend" role="img" aria-label="The Peekaboo animation, following your pointer"></canvas>
+    <p id="status" role="status">Looking for you.</p>
+    <div class="tries">
+      <button type="button" id="yes">Recognise me</button>
+      <button type="button" id="turn">Ask for a head turn</button>
+      <button type="button" id="no">Be a stranger</button>
+    </div>
+  </div>
+</div>
+
+<section class="lid" id="animations">
+  <div class="wrap">
+    <div class="head">
+      <h2>Eight friends to choose from</h2>
+      <p>On your laptop they mirror how you turn your head and when you blink. Here they follow your pointer, drawn by the same code the GNOME extension uses. Pick one to use it above too.</p>
+    </div>
+    <div id="styles"></div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <div class="head">
+      <h2>It only believes its own light</h2>
+      <p>The infrared emitter flickers. Peekaboo subtracts the unlit frames from the lit one, so what is left is light it sent out and got back. It works in the dark and is blind to faces on screens.</p>
+    </div>
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+      <defs>
+        <radialGradient id="g"><stop offset=".7" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+        <g id="you"><ellipse cx="85" cy="92" rx="38" ry="50" fill="url(#g)"/><path d="M30 180c4-34 28-42 55-42s51 8 55 42z" fill="#fff" opacity=".7"/><g fill="#000" opacity=".75"><circle cx="72" cy="84" r="4.5"/><circle cx="98" cy="84" r="4.5"/></g></g>
+        <g id="phone"><rect x="186" y="52" width="62" height="104" rx="8" fill="#c9c9c9"/><ellipse cx="217" cy="100" rx="20" ry="27" fill="#707070"/><g fill="#222"><circle cx="210" cy="96" r="2.6"/><circle cx="224" cy="96" r="2.6"/></g></g>
+      </defs>
+    </svg>
+    <div class="frames">
+      <div><svg viewBox="0 0 280 180" role="img" aria-label="Lit frame: a bright face beside a phone showing a face"><rect width="280" height="180" fill="#151515"/><use href="#you"/><use href="#phone"/></svg><b>Emitter on</b><small>You, and a face on a phone</small></div>
+      <div class="op" aria-label="minus">−</div>
+      <div><svg viewBox="0 0 280 180" role="img" aria-label="Unlit frame: your face is dark, the phone still glows"><rect width="280" height="180" fill="#151515"/><use href="#you" opacity=".12"/><use href="#phone"/></svg><b>Emitter off</b><small>You go dark, the phone does not</small></div>
+      <div class="op" aria-label="equals">=</div>
+      <div><svg viewBox="0 0 280 180" role="img" aria-label="Difference: only your face remains"><rect width="280" height="180" fill="#000"/><use href="#you" opacity=".88"/></svg><b>What gets recognised</b><small>Only you</small></div>
+    </div>
+    <div class="facts">
+      <div><h3>A head turn for what matters</h3><p><code>sudo</code> and system prompts ask for a small turn. It shows that you are not a flat picture, and that you mean it.</p></div>
+      <div><h3>No pictures kept</h3><p>Only numbers are stored, encrypted with a key sealed to the TPM, behind a sandboxed service.</p></div>
+      <div><h3>Your password always works</h3><p>In a terminal you can simply type it while the camera looks. Five failures, a reboot or 48 hours ask for it.</p></div>
+      <div><h3>Only where you want it</h3><p>Switch it on separately for the lock screen, login screen, terminal and system prompts.</p></div>
+      <div><h3>Two cameras to register</h3><p>The colour camera watches along and both must agree it is one face. Only infrared is stored or used to unlock.</p></div>
+      <div><h3>At the laptop only</h3><p>Not over ssh, not with the lid closed, and only for the person whose session is on the screen.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="lid" id="app">
+  <div class="wrap">
+    <div class="head"><h2>Set up in the app, or the terminal</h2><p>Move your head to complete the circle and you are registered. Loosening a setting asks for your password. Tightening one does not.</p></div>
+    <div class="scroll" tabindex="0" role="region" aria-label="Screenshots"><img class="shot" src="docs/app.png" width="1400" height="460" alt="Three screens of the app: home, security settings, and registering a face"></div>
+  </div>
+</section>
+
+<section id="limits">
+  <div class="wrap two">
+    <div class="head"><h2>Read this before relying on it</h2>
+      <p>Peekaboo is a convenience. It does not replace a strong password.</p>
+      <p><a href="https://github.com/Hesam-deb/peekaboo#security">Full security notes and error rates</a></p></div>
+    <ul class="limits">
+      <li>There is no depth sensor. At the lock and login screens no head turn is asked by default, so a good infrared-reflective print of your face might pass. You can turn it on there.</li>
+      <li>Curved prints and masks are not defended against, and no spoofing with physical artefacts has been tested.</li>
+      <li>Identical twins and close relatives may match.</li>
+      <li>A face cannot unlock the GNOME keyring.</li>
+      <li>Root can do anything, including read templates while the key is loaded.</li>
+      <li>It was developed on ASUS Zenbooks with a Shinetech <code>3277:0055</code> camera. Other cameras are simulated in the tests.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="lid" id="install">
+  <div class="wrap two">
+    <div class="head">
+      <h2>Install</h2>
+      <p>For <b>Debian 13</b> and <b>Ubuntu 24.10 or newer</b>, on amd64 or arm64, with an infrared camera. Animations need GNOME 48 to 50.</p>
+      <p>Laptops without infrared are not supported, because a colour camera cannot tell a face from a photo. Neither are MIPI (IPU6/IPU7) infrared sensors that Linux does not expose.</p>
+      <p><a class="go" href="https://github.com/Hesam-deb/peekaboo/releases/latest">Download the latest .deb</a></p>
+      <p><a href="https://github.com/Hesam-deb/peekaboo#install">Build from source, or try Fedora and Arch</a> (untested there)</p>
+    </div>
+    <ol class="steps">
+      <li><h3>Install the package you downloaded</h3><div class="cmd"><pre><code id="c1">sudo apt install ./peekaboo_*.deb</code></pre><button type="button" data-copy="c1">Copy</button></div></li>
+      <li><h3>Check your laptop and register</h3><div class="cmd"><pre><code id="c2">peekaboo doctor        <i># does everything check out?</i>
+peekaboo gui           <i># set up your face, try it</i>
+peekaboo animation on  <i># GNOME; log out and in once</i></code></pre><button type="button" data-copy="c2">Copy</button></div></li>
+      <li><h3>Switch it on</h3><p class="aside">Keep a root shell open until you know you can still get in.</p><div class="cmd"><pre><code id="c3">sudo pam-auth-update --enable peekaboo peekaboo-password</code></pre><button type="button" data-copy="c3">Copy</button></div><p class="aside">To undo it, use <code>--disable</code>. <code>sudo apt remove peekaboo</code> takes everything out.</p></li>
+    </ol>
+  </div>
+</section>
+</main>
+
+<footer><div class="wrap">
+  <span>Peekaboo is <a href="https://github.com/Hesam-deb/peekaboo/blob/main/LICENSE">MIT licensed</a>.</span>
+  <span>Found a hole? <a href="https://github.com/Hesam-deb/peekaboo/security/advisories/new">Report it privately</a></span>
+</div></footer>
+</body>
+</html>

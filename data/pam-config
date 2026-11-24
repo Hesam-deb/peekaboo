@@ -1,0 +1,8 @@
+Name: Peekaboo face unlock
+Default: no
+Priority: 600
+Auth-Type: Primary
+Auth:
+	[success=end default=ignore]	pam_peekaboo.so
+Auth-Initial:
+	[success=end default=ignore]	pam_peekaboo.so

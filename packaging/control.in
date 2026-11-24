@@ -1,0 +1,17 @@
+Package: peekaboo
+Version: @VERSION@
+Architecture: @ARCH@
+Maintainer: Peekaboo contributors <noreply@github.com>
+Installed-Size: @SIZE@
+Section: admin
+Priority: optional
+Homepage: https://github.com/Hesam-deb/peekaboo
+Depends: python3 (>= 3.11), python3-opencv (>= 4.8), python3-numpy, python3-cryptography, python3-gi, gir1.2-adw-1 (>= 1.5), libpam0g (>= 1.4), libpam-runtime, libsystemd0, systemd, polkitd | policykit-1
+Recommends: gjs, gnome-shell
+Description: infrared face unlock for laptops
+ Peekaboo unlocks the lock screen, the login screen, sudo and system prompts
+ by looking at you, on laptops with an infrared (Windows Hello) camera.
+ .
+ It recognises your face only by the light of the camera's own strobing
+ emitter, checks that you are paying attention, and can ask for a small turn
+ of the head. Animations in GNOME follow your head.

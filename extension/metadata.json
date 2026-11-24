@@ -1,0 +1,10 @@
+{
+  "uuid": "peekaboo@hesam-deb.github.io",
+  "name": "Peekaboo",
+  "description": "Animations for Peekaboo face unlock, on the lock screen, in system prompts and for the terminal. The character follows your head.",
+  "shell-version": ["48", "49", "50"],
+  "session-modes": ["user", "unlock-dialog"],
+  "settings-schema": "org.gnome.shell.extensions.peekaboo",
+  "url": "https://github.com/Hesam-deb/peekaboo",
+  "version-name": "1.1.0"
+}

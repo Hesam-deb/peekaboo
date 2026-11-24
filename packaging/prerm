@@ -1,0 +1,7 @@
+#!/bin/sh
+set -e
+# PAM first: logins must never name a module that is gone.
+if [ "$1" = remove ]; then
+    pam-auth-update --package --remove peekaboo peekaboo-password
+    systemctl disable --now peekaboo.socket peekaboo.service || true
+fi

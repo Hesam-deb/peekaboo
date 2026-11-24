@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.hesam_deb.Peekaboo</id>
+  <name>Peekaboo</name>
+  <summary>Unlock your laptop by looking at it</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  <developer id="io.github.hesam_deb"><name>The Peekaboo contributors</name></developer>
+  <description>
+    <p>Peekaboo is face unlock for laptops with an infrared (Windows Hello) camera. It works
+    for the lock screen, the login screen, sudo and system prompts.</p>
+    <ul>
+      <li>Infrared strobe, attention and head-turn checks against pictures and screens</li>
+      <li>Both cameras check each other while you register; only infrared is stored</li>
+      <li>Animations that follow your head, with a studio to make them yours</li>
+      <li>Templates encrypted with a key sealed to the TPM; no pictures are kept</li>
+    </ul>
+  </description>
+  <launchable type="desktop-id">io.github.hesam_deb.Peekaboo.desktop</launchable>
+  <url type="homepage">https://github.com/Hesam-deb/peekaboo</url>
+  <url type="bugtracker">https://github.com/Hesam-deb/peekaboo/issues</url>
+  <content_rating type="oars-1.1"/>
+  <releases>
+    <release version="1.1.0" date="2026-11-24"/>
+    <release version="1.0.0" date="2026-11-24"/>
+  </releases>
+</component>

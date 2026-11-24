@@ -1,0 +1,6 @@
+#!/bin/sh
+set -e
+[ ! -d /run/systemd/system ] || systemctl daemon-reload || true
+if [ "$1" = purge ]; then
+    rm -rf /var/lib/peekaboo /run/peekaboo /etc/peekaboo
+fi

@@ -1,0 +1,43 @@
+# Peekaboo configuration. Values shown are the defaults.
+# Apply changes with: sudo systemctl restart peekaboo.service
+
+[camera]
+#device = "auto"              # infrared camera, or a /dev/v4l/by-path/... node
+#color_device = "auto"        # colour camera, used while registering; "off" never uses it
+#emitter = "auto"             # "off" leaves the IR emitter control alone
+# For cameras whose emitter needs a vendor control: "unit selector hexbytes", as
+# found by linux-enable-ir-emitter. Sent as is, so be sure it is right.
+#emitter_control = ""
+#rotate = "auto"              # "0", "90", "180" or "270" for sideways sensors
+#mode = "auto"                # infrared mode to ask for, like "Y10 640x480@30"
+#exposure = -1                # fixed exposure, for cameras that get it wrong
+#black_level = 0              # subtracted from Y10 to Y16; often 64 on raw sensors
+
+[matching]
+#threshold = 0.60             # cosine similarity, 0.40-0.95; higher is stricter
+#min_frames = 3
+#max_mismatch_frames = 8
+#timeout = 5.0
+#no_face_timeout = 3.0
+#adaptive = true              # follow slow changes in appearance
+
+[liveness]
+# Starting values for the next two; users can change them with their password.
+#require_attention = true     # eyes open, facing the camera
+#gesture = ["shell", "system"]
+#gesture_threshold = 0.18
+#gesture_timeout = 8.0
+#messages = true              # progress messages in terminals and dialogs
+
+[policy]
+# What users may turn on for themselves (peekaboo use, or the app). Everything else
+# that asks PAM for a password is always refused.
+#   lock    lock screen            login   graphical login screen
+#   shell   sudo, su, doas         system  polkit dialogs
+#uses = ["lock", "login", "shell", "system"]
+#deny_services = []           # single PAM services to refuse, e.g. "su"
+#max_failures = 5             # then the password is needed
+#password_after_boot = true
+#password_max_age_hours = 48.0
+#ignore_when_lid_closed = true
+#idle_exit = 300.0

@@ -1,0 +1,9 @@
+#!/bin/sh
+set -e
+if [ "$1" = configure ]; then
+    /usr/lib/peekaboo/setup
+    if [ -z "$2" ]; then
+        echo "Enroll with 'peekaboo gui', then switch Peekaboo on with:"
+        echo "  sudo pam-auth-update --enable peekaboo peekaboo-password"
+    fi
+fi
